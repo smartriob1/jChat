@@ -17,7 +17,7 @@ public class Conexion {
     private Integer puerto;
     private String servidor;
     private static Conexion singleton = null;
-    public final static String FIN_CONN_CLIENTE = "fin_cliente ";
+    public final static String FIN_CLIENTE = "fin_cliente ";
     public final static String FIN = "fin";
     public final static String SHUTDOWN = "shutdown";
 

@@ -17,7 +17,8 @@ public class ServidorChat {
     private static boolean encendido = false;
     private static ServerSocket server;
     private final static String ENCENDER_SERVIDOR = "java ServidorChat";
-    public static List<HiloCliente> CONEXIONES_CLIENTES;
+
+    public static List<HiloClienteServidor> CONEXIONES_CLIENTES;
     public static HashMap<String, Integer> HISTORIAL_CLIENTES;
 
     public static void main(String[] args) {
@@ -28,7 +29,7 @@ public class ServidorChat {
             encender = sc.nextLine();
             if (!encender.trim().equalsIgnoreCase(ENCENDER_SERVIDOR)) {
                 System.out.println("[ERROR] No existe el comando '" + encender + "'.");
-            }else{
+            } else {
                 encendido = true;
             }
         } while (!encender.trim().equalsIgnoreCase(ENCENDER_SERVIDOR));
@@ -40,11 +41,9 @@ public class ServidorChat {
             server = new ServerSocket(Conexion.PUERTO());
             System.out.println("Servidor escuchando en " + server.getLocalSocketAddress());
 
-            //Recibimos clientes mientras el servidor este "encendido".
             while (encendido) {
                 Socket cliente = server.accept();
-                //Abrimos un hilo para procesar cada cliente
-                HiloCliente hiloSocket = new HiloCliente(cliente);
+                HiloClienteServidor hiloSocket = new HiloClienteServidor(cliente);
                 hiloSocket.start();
             }
 

@@ -28,23 +28,20 @@ public class ClienteChat {
                 direccion = campos[2];
                 nic = campos[3];
             } while (!comando.equalsIgnoreCase(CONEXION_CLIENTE) && !direccion.equalsIgnoreCase(Conexion.SERVIDOR() + ":" + Conexion.PUERTO()));
+            
             Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
-            DataInputStream in = new DataInputStream(servidor.getInputStream());
-            DataOutputStream out = new DataOutputStream(servidor.getOutputStream());
-            //Enviamos el nombre del cliente
-            out.writeUTF(nic);
-            //El servidor responde
-            respuesta = in.readUTF();
-            System.out.println("Bienvenido/a. Introduzca un nombre para su usuario");
+            DataInputStream dis = new DataInputStream(servidor.getInputStream());
+            DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
+            dos.writeUTF(nic);
+            respuesta = dis.readUTF();
             do {
-                System.out.print("Nombre: ");
                 mensaje = sc.nextLine();
                 //Enviamos el nombre del cliente
-                out.writeUTF(mensaje);
+                dos.writeUTF(mensaje);
                 //El servidor responde
-                respuesta = in.readUTF();
+                respuesta = dis.readUTF();
                 System.out.println(respuesta);
-            } while (!Conexion.FIN_CONN_CLIENTE.equalsIgnoreCase(respuesta));
+            } while (!Conexion.FIN_CLIENTE.equalsIgnoreCase(respuesta));
 
             servidor.close();
 
