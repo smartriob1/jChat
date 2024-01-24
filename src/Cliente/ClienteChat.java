@@ -28,7 +28,7 @@ public class ClienteChat {
                 direccion = campos[2];
                 nic = campos[3];
             } while (!comando.equalsIgnoreCase(CONEXION_CLIENTE) && !direccion.equalsIgnoreCase(Conexion.SERVIDOR() + ":" + Conexion.PUERTO()));
-            
+
             Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
             DataInputStream dis = new DataInputStream(servidor.getInputStream());
             DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
@@ -36,14 +36,15 @@ public class ClienteChat {
             dos.writeUTF(nic);
             respuesta = dis.readUTF();
             System.out.println(respuesta);
-            do {
+
+            while (!Conexion.FIN_CLIENTE.equalsIgnoreCase(respuesta)) {
                 mensaje = sc.nextLine();
                 //Enviamos el comando
                 dos.writeUTF(mensaje);
                 //El servidor responde
                 respuesta = dis.readUTF();
                 System.out.println(respuesta);
-            } while (!Conexion.FIN_CLIENTE.equalsIgnoreCase(respuesta));
+            }
 
             servidor.close();
 

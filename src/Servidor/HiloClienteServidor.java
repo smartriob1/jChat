@@ -41,6 +41,22 @@ public class HiloClienteServidor extends Thread {
             while (true) {
                 sb = new StringBuilder();
                 mensaje = dis.readUTF();
+
+                if (COMANDOS[0].equalsIgnoreCase(mensaje)) {
+                    out = new DataOutputStream(cliente.getOutputStream());
+                    out.writeUTF(ayuda());
+                }
+
+                if (COMANDOS[1].equalsIgnoreCase(mensaje)) {
+                    out = new DataOutputStream(cliente.getOutputStream());
+                    out.writeUTF(listarUsuarios());
+                }
+
+                if (mensaje.startsWith(COMANDOS[2])) {
+                    out = new DataOutputStream(cliente.getOutputStream());
+                    out.writeUTF(charlar(nombre));
+                }
+
                 if (COMANDOS[3].equalsIgnoreCase(mensaje)) {
                     out = new DataOutputStream(cliente.getOutputStream());
                     out.writeUTF(Conexion.FIN_CLIENTE);
@@ -79,6 +95,35 @@ public class HiloClienteServidor extends Thread {
             ServidorChat.HISTORIAL_CLIENTES.put(nombre, conexiones);
         }
         return true;
+    }
+
+    private String listarUsuarios() {
+        StringBuilder sb = new StringBuilder();
+        synchronized (ServidorChat.CONEXIONES_CLIENTES) {
+            int usuarios = ServidorChat.CONEXIONES_CLIENTES.size();
+            if (usuarios > 0) {
+                sb.append("En este momento están conectados ").append(usuarios).append(" usuarios:\n");
+                for (String usuario : ServidorChat.CONEXIONES_CLIENTES) {
+                    sb.append(usuario).append("\n");
+                }
+            } else {
+                sb.append("En este momento no hay usuarios conectados.");
+            }
+        }
+        return sb.toString();
+    }
+
+    private String ayuda() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("#listar: lista todos los usuarios conectados.\n");
+        sb.append("#charlar <usuario>: comienza la comunicación con el usuario <usuario>.\n");
+        sb.append("#salir: se desconecta del chat.");
+        return sb.toString();
+    }
+
+    private String charlar(String usuario) {
+        //TODO
+        return "";
     }
 
 }
