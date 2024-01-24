@@ -1,6 +1,5 @@
 package Servidor;
 
-import Cliente.ClienteChat;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -12,7 +11,7 @@ import java.util.logging.Logger;
  * @author Silvia
  */
 public class Conexion {
-
+    
     private Integer puerto;
     private String servidor;
     private static Conexion singleton = null;
@@ -27,7 +26,7 @@ public class Conexion {
             Properties props = new Properties();
             props.load(new FileInputStream("opciones.conf"));
             puerto = Integer.valueOf(props.getProperty("PUERTO"));
-            servidor = props.getProperty(ClienteChat.IP, "localhost");
+            servidor = props.getProperty("127.0.0.1", "localhost");
         } catch (IOException| NumberFormatException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -12,8 +12,7 @@ import java.util.Scanner;
  * @author Silvia
  */
 public class ClienteChat {
-
-    public final static String IP = "127.0.0.1";
+    
     private final static String CONEXION_CLIENTE = "java ClienteChat";
 
     public static void main(String[] args) {
