@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,7 +16,13 @@ public class HiloClienteServidor extends Thread {
 
     private final static String[] COMANDOS = {"#ayuda", "#listar", "#charlar ", "#salir"};
     private String nombre;
+    private boolean charlando = false;
     private Socket cliente;
+    private HiloClienteServidor usuario = null;
+
+    public HiloClienteServidor(String nombre) {
+        this.nombre = nombre;
+    }
 
     public HiloClienteServidor(Socket cliente) {
         this.cliente = cliente;
@@ -54,7 +61,9 @@ public class HiloClienteServidor extends Thread {
 
                 if (mensaje.startsWith(COMANDOS[2])) {
                     out = new DataOutputStream(cliente.getOutputStream());
-                    out.writeUTF(charlar(nombre));
+                    String[] campos = mensaje.split(" ");
+                    usuario = new HiloClienteServidor(campos[1]);
+                    out.writeUTF(charlar(usuario));
                 }
 
                 if (COMANDOS[3].equalsIgnoreCase(mensaje)) {
@@ -62,6 +71,19 @@ public class HiloClienteServidor extends Thread {
                     out.writeUTF(Conexion.FIN_CLIENTE);
                     ServidorChat.CONEXIONES_CLIENTES.remove(nombre);
                     break;
+                }
+
+                if (charlando) {
+                    synchronized (ServidorChat.CONEXIONES_CLIENTES) {
+                        if (ServidorChat.CONEXIONES_CLIENTES.contains(usuario)) {
+                            usuario.recibirMensaje(mensaje);
+                        } else {
+                            sb.append("[ERROR] El usuario ").append(usuario.nombre).append(" ya no se encuentra conectado. Utiliza el comando #listar para ver los usuarios conectados.");
+                        }
+                    }
+                } else {
+                    out = new DataOutputStream(cliente.getOutputStream());
+                    out.writeUTF("[ERROR] '" + mensaje + "' no se reconoce como comando. Si quieres iniciar una conversación o responder a un usuario utiliza el comando #charlar <nic>.");
                 }
             }
 
@@ -74,8 +96,7 @@ public class HiloClienteServidor extends Thread {
 
     private boolean addCliente() {
         synchronized (ServidorChat.CONEXIONES_CLIENTES) {
-            if (ServidorChat.CONEXIONES_CLIENTES.contains(nombre)) {
-                //rechazamos la conexion
+            if (ServidorChat.CONEXIONES_CLIENTES.contains(this)) {
                 System.out.println("Rechazando conexion para " + nombre);
                 try {
                     DataOutputStream out = new DataOutputStream(cliente.getOutputStream());
@@ -85,7 +106,7 @@ public class HiloClienteServidor extends Thread {
                 }
                 return false;
             } else {
-                ServidorChat.CONEXIONES_CLIENTES.add(nombre);
+                ServidorChat.CONEXIONES_CLIENTES.add(this);
             }
         }
 
@@ -103,8 +124,8 @@ public class HiloClienteServidor extends Thread {
             int usuarios = ServidorChat.CONEXIONES_CLIENTES.size();
             if (usuarios > 0) {
                 sb.append("En este momento están conectados ").append(usuarios).append(" usuarios:\n");
-                for (String usuario : ServidorChat.CONEXIONES_CLIENTES) {
-                    sb.append(usuario).append("\n");
+                for (HiloClienteServidor usuario : ServidorChat.CONEXIONES_CLIENTES) {
+                    sb.append(usuario.nombre).append("\n");
                 }
             } else {
                 sb.append("En este momento no hay usuarios conectados.");
@@ -121,18 +142,49 @@ public class HiloClienteServidor extends Thread {
         return sb.toString();
     }
 
-    private String charlar(String usuario) {
+    private String charlar(HiloClienteServidor usuario) {
         StringBuilder sb = new StringBuilder();
         synchronized (ServidorChat.CONEXIONES_CLIENTES) {
             if (ServidorChat.CONEXIONES_CLIENTES.contains(usuario)) {
-                //TODO
-                sb.append("Ahora estás conectado con ").append(usuario).append(". Escribe para hablarle.");
+                charlando = true;
+                sb.append("Ahora estás conectado con ").append(usuario.nombre).append(". Escribe para hablarle.");
             } else {
-                sb.append("[ERROR] El usuario ").append(usuario).append(" no se encuentra conectado. Utiliza el comando #listar para ver los usuarios conectados.");
+                sb.append("[ERROR] El usuario ").append(usuario.nombre).append(" no se encuentra conectado. Utiliza el comando #listar para ver los usuarios conectados.");
             }
         }
-
         return sb.toString();
+    }
+
+    public synchronized void recibirMensaje(String mensaje) {
+        DataOutputStream out = null;
+        try {
+            out = new DataOutputStream(cliente.getOutputStream());
+            out.writeUTF(mensaje);
+        } catch (IOException ex) {
+            Logger.getLogger(HiloClienteServidor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 83 * hash + Objects.hashCode(this.nombre);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final HiloClienteServidor other = (HiloClienteServidor) obj;
+        return Objects.equals(this.nombre, other.nombre);
     }
 
 }

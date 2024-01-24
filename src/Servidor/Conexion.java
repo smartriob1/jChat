@@ -8,9 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Esta clase maneja las propiedades de la conexión.
  *
- * @author Samuel
+ * @author Silvia
  */
 public class Conexion {
 
@@ -34,18 +33,10 @@ public class Conexion {
         }
     }
 
-    /**
-     * Devuelve el puerto por el que escucha el servidor.
-     * @return puerto del servidor
-     */
     public static Integer PUERTO() {
         return getConexion().puerto;
     }
 
-    /**
-     * Devuelve la dirección ip o el host en el que escucha el servidor.
-     * @return host del servidor.
-     */
     public static String SERVIDOR() {
         return getConexion().servidor;
     }
