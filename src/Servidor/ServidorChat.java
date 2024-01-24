@@ -18,7 +18,7 @@ public class ServidorChat {
     private static ServerSocket server;
     private final static String ENCENDER_SERVIDOR = "java ServidorChat";
 
-    public static List<HiloClienteServidor> CONEXIONES_CLIENTES;
+    public static List<String> CONEXIONES_CLIENTES;
     public static HashMap<String, Integer> HISTORIAL_CLIENTES;
 
     public static void main(String[] args) {

@@ -1,8 +1,11 @@
 package Servidor;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -10,6 +13,7 @@ import java.net.Socket;
  */
 public class HiloClienteServidor extends Thread {
 
+    private final static String[] COMANDOS = {"#ayuda", "#listar", "#charlar ", "#salir"};
     private String nombre;
     private Socket cliente;
 
@@ -19,13 +23,32 @@ public class HiloClienteServidor extends Thread {
 
     public void run() {
         DataInputStream dis = null;
+        DataOutputStream out = null;
+        StringBuilder sb = null;
+        String mensaje;
         try {
+            //Obtenemos el nic
             dis = new DataInputStream(cliente.getInputStream());
             nombre = dis.readUTF();
             System.out.println("Recibido cliente " + nombre + " con dirección " + cliente.getRemoteSocketAddress());
-            if (!addCliente()) {
-
+            if (addCliente()) {
+                synchronized (this) {
+                    out = new DataOutputStream(cliente.getOutputStream());
+                    out.writeUTF("Estás conectado con el nic de " + nombre);
+                }
             }
+
+            while (true) {
+                sb = new StringBuilder();
+                mensaje = dis.readUTF();
+                if (COMANDOS[3].equalsIgnoreCase(mensaje)) {
+                    out = new DataOutputStream(cliente.getOutputStream());
+                    out.writeUTF(Conexion.FIN_CLIENTE);
+                    ServidorChat.CONEXIONES_CLIENTES.remove(nombre);
+                    break;
+                }
+            }
+
         } catch (IOException ex) {
             //Logger.getLogger(HiloCliente.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Cerrando cliente " + nombre);
@@ -36,18 +59,26 @@ public class HiloClienteServidor extends Thread {
     private boolean addCliente() {
         synchronized (ServidorChat.CONEXIONES_CLIENTES) {
             if (ServidorChat.CONEXIONES_CLIENTES.contains(nombre)) {
-                //ENVIAR MENSAJE DE QUE NO SE PUDO ACEPTAR LA CONEXION
+                //rechazamos la conexion
+                System.out.println("Rechazando conexion para " + nombre);
+                try {
+                    DataOutputStream out = new DataOutputStream(cliente.getOutputStream());
+                    out.writeUTF(Conexion.FIN_CLIENTE);
+                } catch (IOException ex) {
+                    Logger.getLogger(HiloClienteServidor.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 return false;
+            } else {
+                ServidorChat.CONEXIONES_CLIENTES.add(nombre);
             }
-            ServidorChat.CONEXIONES_CLIENTES.add(this);
         }
-        
+
         synchronized (ServidorChat.HISTORIAL_CLIENTES) {
-                Integer conexiones = ServidorChat.HISTORIAL_CLIENTES.get(nombre);
-                conexiones = conexiones == null ? 1 : ++conexiones;
-                ServidorChat.HISTORIAL_CLIENTES.put(nombre, conexiones);
-            }
-            return true;
+            Integer conexiones = ServidorChat.HISTORIAL_CLIENTES.get(nombre);
+            conexiones = conexiones == null ? 1 : ++conexiones;
+            ServidorChat.HISTORIAL_CLIENTES.put(nombre, conexiones);
+        }
+        return true;
     }
 
 }
