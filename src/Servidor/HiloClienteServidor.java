@@ -122,8 +122,17 @@ public class HiloClienteServidor extends Thread {
     }
 
     private String charlar(String usuario) {
-        //TODO
-        return "";
+        StringBuilder sb = new StringBuilder();
+        synchronized (ServidorChat.CONEXIONES_CLIENTES) {
+            if (ServidorChat.CONEXIONES_CLIENTES.contains(usuario)) {
+                //TODO
+                sb.append("Ahora estás conectado con ").append(usuario).append(". Escribe para hablarle.");
+            } else {
+                sb.append("[ERROR] El usuario ").append(usuario).append(" no se encuentra conectado. Utiliza el comando #listar para ver los usuarios conectados.");
+            }
+        }
+
+        return sb.toString();
     }
 
 }
