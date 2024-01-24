@@ -32,7 +32,8 @@ public class ClienteChat {
             Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
             DataInputStream dis = new DataInputStream(servidor.getInputStream());
             DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
-            //enviar el nic antes de hacer
+            
+            //enviar el nic
             dos.writeUTF(nic);
             respuesta = dis.readUTF();
             System.out.println(respuesta);
