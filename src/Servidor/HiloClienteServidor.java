@@ -79,7 +79,7 @@ public class HiloClienteServidor extends Thread {
                 if (charlando) {
                     synchronized (ServidorChat.CONEXIONES_CLIENTES) {
                         if (ServidorChat.CONEXIONES_CLIENTES.contains(usuario)) {
-                            usuario.recibirMensaje(mensaje);
+                            usuario.recibirMensaje(mensaje, this);
                         } else {
                             sb.append("[ERROR] El usuario ").append(usuario.nombre).append(" ya no se encuentra conectado. Utiliza el comando #listar para ver los usuarios conectados.");
                         }
@@ -160,11 +160,11 @@ public class HiloClienteServidor extends Thread {
         return sb.toString();
     }
 
-    public synchronized void recibirMensaje(String mensaje) {
+    public synchronized void recibirMensaje(String mensaje, HiloClienteServidor emisor) {
         DataOutputStream out = null;
         try {
             out = new DataOutputStream(cliente.getOutputStream());
-            out.writeUTF(">" + nombre + ": " + mensaje);
+            out.writeUTF(">" + emisor.nombre + ": " + mensaje);
         } catch (IOException ex) {
             Logger.getLogger(HiloClienteServidor.class.getName()).log(Level.SEVERE, null, ex);
         }
