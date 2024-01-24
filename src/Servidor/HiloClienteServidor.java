@@ -164,7 +164,7 @@ public class HiloClienteServidor extends Thread {
         DataOutputStream out = null;
         try {
             out = new DataOutputStream(cliente.getOutputStream());
-            out.writeUTF(mensaje);
+            out.writeUTF(">" + nombre + ": " + mensaje);
         } catch (IOException ex) {
             Logger.getLogger(HiloClienteServidor.class.getName()).log(Level.SEVERE, null, ex);
         }
