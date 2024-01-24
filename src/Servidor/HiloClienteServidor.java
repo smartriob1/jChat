@@ -52,18 +52,21 @@ public class HiloClienteServidor extends Thread {
                 if (COMANDOS[0].equalsIgnoreCase(mensaje)) {
                     out = new DataOutputStream(cliente.getOutputStream());
                     out.writeUTF(ayuda());
+                    continue;
                 }
 
                 if (COMANDOS[1].equalsIgnoreCase(mensaje)) {
                     out = new DataOutputStream(cliente.getOutputStream());
                     out.writeUTF(listarUsuarios());
+                    continue;
                 }
 
                 if (mensaje.startsWith(COMANDOS[2])) {
                     out = new DataOutputStream(cliente.getOutputStream());
                     String[] campos = mensaje.split(" ");
                     usuario = new HiloClienteServidor(campos[1]);
-                    out.writeUTF(charlar(usuario));
+                    out.writeUTF(charlar());
+                    continue;
                 }
 
                 if (COMANDOS[3].equalsIgnoreCase(mensaje)) {
@@ -142,10 +145,12 @@ public class HiloClienteServidor extends Thread {
         return sb.toString();
     }
 
-    private String charlar(HiloClienteServidor usuario) {
+    private String charlar() {
         StringBuilder sb = new StringBuilder();
         synchronized (ServidorChat.CONEXIONES_CLIENTES) {
             if (ServidorChat.CONEXIONES_CLIENTES.contains(usuario)) {
+                int index = ServidorChat.CONEXIONES_CLIENTES.indexOf(usuario);
+                this.usuario = ServidorChat.CONEXIONES_CLIENTES.get(index);
                 charlando = true;
                 sb.append("Ahora estás conectado con ").append(usuario.nombre).append(". Escribe para hablarle.");
             } else {
