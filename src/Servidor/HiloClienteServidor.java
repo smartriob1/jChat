@@ -72,7 +72,7 @@ public class HiloClienteServidor extends Thread {
                 if (COMANDOS[3].equalsIgnoreCase(mensaje)) {
                     out = new DataOutputStream(cliente.getOutputStream());
                     out.writeUTF(Conexion.FIN_CLIENTE);
-                    ServidorChat.CONEXIONES_CLIENTES.remove(nombre);
+                    ServidorChat.CONEXIONES_CLIENTES.remove(this);
                     break;
                 }
 

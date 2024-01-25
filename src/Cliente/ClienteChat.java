@@ -6,18 +6,21 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Silvia
  */
 public class ClienteChat {
-    
+
     private final static String CONEXION_CLIENTE = "java ClienteChat";
+    public static String respuesta = null;
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        String conexion, comando, direccion, nic, respuesta, mensaje;
+        String conexion, comando, direccion, nic, mensaje;
         try {
             do {
                 System.out.print("> ");
@@ -31,7 +34,7 @@ public class ClienteChat {
             Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
             DataInputStream dis = new DataInputStream(servidor.getInputStream());
             DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
-            
+
             //enviar el nic
             dos.writeUTF(nic);
             respuesta = dis.readUTF();
@@ -53,4 +56,5 @@ public class ClienteChat {
         }
         System.out.println("Conexión cerrada");
     }
+
 }
