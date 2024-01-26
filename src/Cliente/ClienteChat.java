@@ -34,7 +34,6 @@ public class ClienteChat {
             dos.writeUTF(nic);
             respuesta = dis.readUTF();
             System.out.println(respuesta);
-
             while (!Conexion.FIN_CLIENTE.equalsIgnoreCase(respuesta)) {
 //              receptor.start();
 //              mensaje = sc.nextLine();
