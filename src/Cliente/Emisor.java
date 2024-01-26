@@ -28,6 +28,7 @@ public class Emisor extends Thread {
         try {
             Scanner sc = new Scanner(System.in);
             while (!fin) {
+                //CORREGIR QUE SE QUEDA PILLADO EN EL SCANNER
                 String mensaje = sc.nextLine();
                 //Enviamos el comando
                 dos.writeUTF(mensaje);
