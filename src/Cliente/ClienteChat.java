@@ -6,8 +6,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -15,32 +13,29 @@ import java.util.logging.Logger;
  */
 public class ClienteChat {
 
-    private final static String CONEXION_CLIENTE = "java ClienteChat";
     public static String respuesta = null;
 
+    //los parametros son en args[]
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         String conexion, comando, direccion, nic, mensaje;
         try {
             do {
-                System.out.print("> ");
-                conexion = sc.nextLine();
-                String[] campos = conexion.split(" ");
-                comando = campos[0] + " " + campos[1];
-                direccion = campos[2];
-                nic = campos[3];
-            } while (!comando.equalsIgnoreCase(CONEXION_CLIENTE) && !direccion.equalsIgnoreCase(Conexion.SERVIDOR() + ":" + Conexion.PUERTO()));
+                direccion = args[0];
+                nic = args[1];
+            } while (!direccion.equalsIgnoreCase(Conexion.SERVIDOR() + ":" + Conexion.PUERTO()));
 
             Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
             DataInputStream dis = new DataInputStream(servidor.getInputStream());
             DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
-            
+
             //enviar el nic
             dos.writeUTF(nic);
             respuesta = dis.readUTF();
             System.out.println(respuesta);
 
             while (!Conexion.FIN_CLIENTE.equalsIgnoreCase(respuesta)) {
+                receptor.start();
                 mensaje = sc.nextLine();
                 //Enviamos el comando
                 dos.writeUTF(mensaje);
