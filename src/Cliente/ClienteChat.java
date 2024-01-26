@@ -18,7 +18,7 @@ public class ClienteChat {
     //los parametros son en args[]
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        String conexion, comando, direccion, nic, mensaje;
+        String direccion, nic, mensaje;
         try {
             do {
                 direccion = args[0];
@@ -28,20 +28,21 @@ public class ClienteChat {
             Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
             DataInputStream dis = new DataInputStream(servidor.getInputStream());
             DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
-
+            Receptor receptor = new Receptor(dis);
+            Emisor emisor = new Emisor(dos);
             //enviar el nic
             dos.writeUTF(nic);
             respuesta = dis.readUTF();
             System.out.println(respuesta);
 
             while (!Conexion.FIN_CLIENTE.equalsIgnoreCase(respuesta)) {
-                receptor.start();
-                mensaje = sc.nextLine();
-                //Enviamos el comando
-                dos.writeUTF(mensaje);
-                //El servidor responde
-                respuesta = dis.readUTF();
-                System.out.println(respuesta);
+//              receptor.start();
+//              mensaje = sc.nextLine();
+//              //Enviamos el comando
+//              dos.writeUTF(mensaje);
+//              //El servidor responde
+//              respuesta = dis.readUTF();
+//              System.out.println(respuesta);
             }
 
             servidor.close();

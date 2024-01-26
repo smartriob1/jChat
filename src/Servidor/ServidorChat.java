@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  *
@@ -19,8 +18,6 @@ public class ServidorChat {
     public static HashMap<String, Integer> HISTORIAL_CLIENTES;
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        
         try {
             CONEXIONES_CLIENTES = new ArrayList();
             HISTORIAL_CLIENTES = new HashMap();
