@@ -1,9 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Cliente;
-import Servidor.Conexion;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Scanner;
@@ -17,18 +12,22 @@ import java.util.logging.Logger;
 public class Emisor extends Thread {
 
     private DataOutputStream dos;
-    private String respuesta;
+    private boolean fin;
 
-    public Emisor(DataOutputStream dos, String respuesta) {
+    public Emisor(DataOutputStream dos) {
         this.dos = dos;
-        this.respuesta = respuesta;
+        this.fin = false;
+    }
+
+    public void setFin(boolean fin) {
+        this.fin = fin;
     }
 
     @Override
     public void run() {
         try {
             Scanner sc = new Scanner(System.in);
-            while (!Conexion.FIN_CLIENTE.equalsIgnoreCase(respuesta)) {
+            while (!fin) {
                 String mensaje = sc.nextLine();
                 //Enviamos el comando
                 dos.writeUTF(mensaje);

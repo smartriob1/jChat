@@ -30,8 +30,8 @@ public class ClienteChat {
             Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
             DataInputStream dis = new DataInputStream(servidor.getInputStream());
             DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
-            Receptor receptor = new Receptor(dis, respuesta);
-            Emisor emisor = new Emisor(dos, respuesta);
+            Emisor emisor = new Emisor(dos);
+            Receptor receptor = new Receptor(dis, respuesta, emisor);
             //enviar el nic
             dos.writeUTF(nic);
             respuesta = dis.readUTF();
@@ -39,7 +39,7 @@ public class ClienteChat {
             receptor.start();
             emisor.start();
             receptor.join();
-            emisor.join();
+            emisor.interrupt();
             servidor.close();
 
         } catch (IOException ex) {

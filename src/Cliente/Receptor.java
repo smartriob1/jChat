@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Cliente;
 
 import Servidor.Conexion;
@@ -18,19 +14,22 @@ public class Receptor extends Thread {
 
     private DataInputStream dis;
     private String respuesta;
+    private Emisor emisor;
 
-    public Receptor(DataInputStream dis, String respuesta) {
+    public Receptor(DataInputStream dis, String respuesta, Emisor emisor) {
         this.dis = dis;
         this.respuesta = respuesta;
+        this.emisor = emisor;
     }
 
     @Override
     public void run() {
         try {
             while (!Conexion.FIN_CLIENTE.equalsIgnoreCase(respuesta)) {
-                String respuesta = dis.readUTF();
+                respuesta = dis.readUTF();
                 System.out.println(respuesta);
             }
+            emisor.setFin(true);
         } catch (IOException ex) {
             Logger.getLogger(Receptor.class.getName()).log(Level.SEVERE, null, ex);
         }
