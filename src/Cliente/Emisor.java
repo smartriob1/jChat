@@ -17,17 +17,17 @@ import java.util.logging.Logger;
 public class Emisor extends Thread {
 
     private DataOutputStream dos;
-    private Scanner sc;
     private String respuesta;
 
-    public Emisor(DataOutputStream dos) {
+    public Emisor(DataOutputStream dos, String respuesta) {
         this.dos = dos;
-        sc = new Scanner(System.in);
+        this.respuesta = respuesta;
     }
 
     @Override
     public void run() {
         try {
+            Scanner sc = new Scanner(System.in);
             while (!Conexion.FIN_CLIENTE.equalsIgnoreCase(respuesta)) {
                 String mensaje = sc.nextLine();
                 //Enviamos el comando
