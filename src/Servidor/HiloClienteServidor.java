@@ -92,9 +92,9 @@ public class HiloClienteServidor extends Thread {
 
         } catch (IOException ex) {
             //Logger.getLogger(HiloCliente.class.getName()).log(Level.SEVERE, null, ex);
-            System.err.println("Cerrando cliente " + nombre);
+            System.err.println("Cerrando cliente " + nombre + " con dirección " + cliente.getRemoteSocketAddress());
         }
-        System.out.println(this.nombre + " desconectado.");
+        System.out.println(this.nombre + " con dirección " + cliente.getRemoteSocketAddress() + " desconectado.");
     }
 
     private boolean addCliente() {
