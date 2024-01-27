@@ -39,7 +39,7 @@ public class ClienteChat {
             receptor.start();
             emisor.start();
             receptor.join();
-            emisor.interrupt();
+            emisor.join();
             servidor.close();
 
         } catch (IOException ex) {
