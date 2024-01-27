@@ -22,16 +22,16 @@ public class ClienteChat {
         Scanner sc = new Scanner(System.in);
         String direccion, nic, mensaje;
         try {
-//            do {
-//                direccion = args[0];
-//                nic = args[1];
-//            } while (!direccion.equalsIgnoreCase(Conexion.SERVIDOR() + ":" + Conexion.PUERTO()));
-            nic = sc.nextLine();
+            do {
+                direccion = args[0];
+                nic = args[1];
+            } while (!direccion.equalsIgnoreCase(Conexion.SERVIDOR() + ":" + Conexion.PUERTO()));
+            //nic = sc.nextLine();
             Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
             DataInputStream dis = new DataInputStream(servidor.getInputStream());
             DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
             Emisor emisor = new Emisor(dos);
-            Receptor receptor = new Receptor(dis, respuesta, emisor);
+            Receptor receptor = new Receptor(dis, respuesta);
             //enviar el nic
             dos.writeUTF(nic);
             respuesta = dis.readUTF();
@@ -39,6 +39,7 @@ public class ClienteChat {
             receptor.start();
             emisor.start();
             receptor.join();
+            emisor.setFin(true);
             emisor.join();
             servidor.close();
 

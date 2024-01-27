@@ -14,12 +14,10 @@ public class Receptor extends Thread {
 
     private DataInputStream dis;
     private String respuesta;
-    private Emisor emisor;
 
-    public Receptor(DataInputStream dis, String respuesta, Emisor emisor) {
+    public Receptor(DataInputStream dis, String respuesta) {
         this.dis = dis;
         this.respuesta = respuesta;
-        this.emisor = emisor;
     }
 
     @Override
@@ -29,7 +27,6 @@ public class Receptor extends Thread {
                 respuesta = dis.readUTF();
                 System.out.println(respuesta);
             }
-            emisor.setFin(true);
         } catch (IOException ex) {
             Logger.getLogger(Receptor.class.getName()).log(Level.SEVERE, null, ex);
         }

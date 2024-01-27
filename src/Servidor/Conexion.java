@@ -24,8 +24,8 @@ public class Conexion {
         servidor = "localhost";
         try {
             Properties props = new Properties();
-            //props.load(new FileInputStream(".\\Servidor\\opciones.conf"));
-            props.load(new FileInputStream("src\\Servidor\\opciones.conf"));
+            props.load(new FileInputStream(".\\Servidor\\opciones.conf"));
+            //props.load(new FileInputStream("src\\Servidor\\opciones.conf"));
             puerto = Integer.valueOf(props.getProperty("PUERTO"));
             servidor = props.getProperty("127.0.0.1", "localhost");
         } catch (IOException| NumberFormatException ex) {

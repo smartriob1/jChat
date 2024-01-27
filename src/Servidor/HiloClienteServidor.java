@@ -30,7 +30,7 @@ public class HiloClienteServidor extends Thread {
 
     public void run() {
         DataInputStream dis = null;
-        DataOutputStream out = null;
+        DataOutputStream dos = null;
         StringBuilder sb = null;
         String mensaje;
         try {
@@ -40,8 +40,8 @@ public class HiloClienteServidor extends Thread {
             System.out.println("Recibido cliente " + nombre + " con dirección " + cliente.getRemoteSocketAddress());
             if (addCliente()) {
                 synchronized (this) {
-                    out = new DataOutputStream(cliente.getOutputStream());
-                    out.writeUTF("Estás conectado con el nic de " + nombre);
+                    dos = new DataOutputStream(cliente.getOutputStream());
+                    dos.writeUTF("Estás conectado con el nic de " + nombre);
                 }
             }
 
@@ -50,28 +50,28 @@ public class HiloClienteServidor extends Thread {
                 mensaje = dis.readUTF();
 
                 if (COMANDOS[0].equalsIgnoreCase(mensaje)) {
-                    out = new DataOutputStream(cliente.getOutputStream());
-                    out.writeUTF(ayuda());
+                    dos = new DataOutputStream(cliente.getOutputStream());
+                    dos.writeUTF(ayuda());
                     continue;
                 }
 
                 if (COMANDOS[1].equalsIgnoreCase(mensaje)) {
-                    out = new DataOutputStream(cliente.getOutputStream());
-                    out.writeUTF(listarUsuarios());
+                    dos = new DataOutputStream(cliente.getOutputStream());
+                    dos.writeUTF(listarUsuarios());
                     continue;
                 }
 
                 if (mensaje.startsWith(COMANDOS[2])) {
-                    out = new DataOutputStream(cliente.getOutputStream());
+                    dos = new DataOutputStream(cliente.getOutputStream());
                     String[] campos = mensaje.split(" ");
                     usuario = new HiloClienteServidor(campos[1]);
-                    out.writeUTF(charlar());
+                    dos.writeUTF(charlar());
                     continue;
                 }
 
                 if (COMANDOS[3].equalsIgnoreCase(mensaje)) {
-                    out = new DataOutputStream(cliente.getOutputStream());
-                    out.writeUTF(Conexion.FIN_CLIENTE);
+                    dos = new DataOutputStream(cliente.getOutputStream());
+                    dos.writeUTF(Conexion.FIN_CLIENTE);
                     ServidorChat.CONEXIONES_CLIENTES.remove(this);
                     break;
                 }
@@ -85,8 +85,8 @@ public class HiloClienteServidor extends Thread {
                         }
                     }
                 } else {
-                    out = new DataOutputStream(cliente.getOutputStream());
-                    out.writeUTF("[ERROR] '" + mensaje + "' no se reconoce como comando. Si quieres iniciar una conversación o responder a un usuario utiliza el comando #charlar <nic>.");
+                    dos = new DataOutputStream(cliente.getOutputStream());
+                    dos.writeUTF("[ERROR] '" + mensaje + "' no se reconoce como comando. Si quieres iniciar una conversación o responder a un usuario utiliza el comando #charlar <nic>.");
                 }
             }
 
