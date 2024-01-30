@@ -22,26 +22,28 @@ public class ClienteChat {
         Scanner sc = new Scanner(System.in);
         String direccion, nic, mensaje;
         try {
-            do {
+            if (args.length == 2) {
                 direccion = args[0];
                 nic = args[1];
-            } while (!direccion.equalsIgnoreCase(Conexion.SERVIDOR() + ":" + Conexion.PUERTO()));
-            //nic = sc.nextLine();
-            Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
-            DataInputStream dis = new DataInputStream(servidor.getInputStream());
-            DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
-            Emisor emisor = new Emisor(dos);
-            Receptor receptor = new Receptor(dis, respuesta);
-            //enviar el nic
-            dos.writeUTF(nic);
-            respuesta = dis.readUTF();
-            System.out.println(respuesta);
-            receptor.start();
-            emisor.start();
-            receptor.join();
-            emisor.setFin(true);
-            emisor.join();
-            servidor.close();
+                //nic = sc.nextLine();
+                Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
+                DataInputStream dis = new DataInputStream(servidor.getInputStream());
+                DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
+                Emisor emisor = new Emisor(dos);
+                Receptor receptor = new Receptor(dis, respuesta);
+                //enviar el nic
+                dos.writeUTF(nic);
+                respuesta = dis.readUTF();
+                System.out.println(respuesta);
+                receptor.start();
+                emisor.start();
+                receptor.join();
+                emisor.setFin(true);
+                emisor.join();
+                servidor.close();
+            } else {
+                System.out.println("El comando lleva los siguientes parámetros java ClienteChat <direccion> <nic>");
+            }
 
         } catch (IOException ex) {
             //Logger.getLogger(ClienteChat.class.getName()).log(Level.SEVERE, null, ex);
