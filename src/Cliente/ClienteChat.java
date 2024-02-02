@@ -35,6 +35,7 @@ public class ClienteChat {
                 dos.writeUTF(nic);
                 respuesta = dis.readUTF();
                 System.out.println(respuesta);
+                //ENFOCAR CON QUE SIEMPRE LEE ALGO PRIMERO Y LUEGO ENVIA
                 receptor.start();
                 emisor.start();
                 receptor.join();
