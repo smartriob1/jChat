@@ -13,16 +13,15 @@ import java.util.logging.Logger;
 public class Receptor extends Thread {
 
     private DataInputStream dis;
-    private String respuesta;
 
-    public Receptor(DataInputStream dis, String respuesta) {
+    public Receptor(DataInputStream dis) {
         this.dis = dis;
-        this.respuesta = respuesta;
     }
 
     @Override
     public void run() {
         try {
+            String respuesta = "";
             while (!Conexion.FIN_CLIENTE.equalsIgnoreCase(respuesta)) {
                 respuesta = dis.readUTF();
                 System.out.println(respuesta);

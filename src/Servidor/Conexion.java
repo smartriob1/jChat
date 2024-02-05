@@ -1,5 +1,7 @@
 package Servidor;
 
+
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -16,18 +18,16 @@ public class Conexion {
     private String servidor;
     private static Conexion singleton = null;
     public final static String FIN_CLIENTE = "fin_cliente ";
-    public final static String FIN = "fin";
-    public final static String SHUTDOWN = "shutdown";
 
     private Conexion() {
         puerto = 9;
         servidor = "localhost";
         try {
             Properties props = new Properties();
-            props.load(new FileInputStream(".\\Servidor\\opciones.conf"));
-            //props.load(new FileInputStream("src\\Servidor\\opciones.conf"));
+            //props.load(new FileInputStream(".\\Servidor\\opciones.conf"));
+            props.load(new FileInputStream("src\\Servidor\\opciones.conf"));
             puerto = Integer.valueOf(props.getProperty("PUERTO"));
-            servidor = props.getProperty("127.0.0.1", "localhost");
+            servidor = props.getProperty("SERVIDOR", "localhost");
         } catch (IOException| NumberFormatException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
         }

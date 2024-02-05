@@ -31,7 +31,6 @@ public class HiloClienteServidor extends Thread {
     public void run() {
         DataInputStream dis = null;
         DataOutputStream dos = null;
-        StringBuilder sb = null;
         String mensaje;
         try {
             //Obtenemos el nic
@@ -43,70 +42,77 @@ public class HiloClienteServidor extends Thread {
                     dos = new DataOutputStream(cliente.getOutputStream());
                     dos.writeUTF("Estás conectado con el nic de " + nombre);
                 }
-            }
 
-            while (true) {
-                sb = new StringBuilder();
-                mensaje = dis.readUTF();
+                while (true) {
+                    mensaje = dis.readUTF();
 
-                if (COMANDOS[0].equalsIgnoreCase(mensaje)) {
-                    dos = new DataOutputStream(cliente.getOutputStream());
-                    dos.writeUTF(ayuda());
-                    continue;
-                }
-
-                if (COMANDOS[1].equalsIgnoreCase(mensaje)) {
-                    dos = new DataOutputStream(cliente.getOutputStream());
-                    dos.writeUTF(listarUsuarios());
-                    continue;
-                }
-
-                if (mensaje.startsWith(COMANDOS[2])) {
-                    dos = new DataOutputStream(cliente.getOutputStream());
-                    String[] campos = mensaje.split(" ");
-                    usuario = new HiloClienteServidor(campos[1]);
-                    dos.writeUTF(charlar());
-                    continue;
-                }
-
-                if (COMANDOS[3].equalsIgnoreCase(mensaje)) {
-                    dos = new DataOutputStream(cliente.getOutputStream());
-                    dos.writeUTF(Conexion.FIN_CLIENTE);
-                    ServidorChat.CONEXIONES_CLIENTES.remove(this);
-                    break;
-                }
-
-                if (charlando) {
-                    synchronized (ServidorChat.CONEXIONES_CLIENTES) {
-                        if (ServidorChat.CONEXIONES_CLIENTES.contains(usuario)) {
-                            usuario.recibirMensaje(mensaje, this);
-                        } else {
-                            sb.append("[ERROR] El usuario ").append(usuario.nombre).append(" ya no se encuentra conectado. Utiliza el comando #listar para ver los usuarios conectados.");
-                        }
+                    if (COMANDOS[0].equalsIgnoreCase(mensaje.trim())) {
+                        ayuda();
+                        continue;
                     }
-                } else {
-                    dos = new DataOutputStream(cliente.getOutputStream());
-                    dos.writeUTF("[ERROR] '" + mensaje + "' no se reconoce como comando. Si quieres iniciar una conversación o responder a un usuario utiliza el comando #charlar <nic>.");
+
+                    if (COMANDOS[1].equalsIgnoreCase(mensaje.trim())) {
+                        listarUsuarios();
+                        continue;
+                    }
+
+                    if (mensaje.trim().startsWith(COMANDOS[2])) {
+                        String[] campos = mensaje.split(" ");
+                        usuario = new HiloClienteServidor(campos[1]);
+                        charlar();
+                        continue;
+                    }
+
+                    if (COMANDOS[3].equalsIgnoreCase(mensaje.trim())) {
+                        enviarMensaje(Conexion.FIN_CLIENTE);
+                        ServidorChat.CONEXIONES_CLIENTES.remove(this);
+                        break;
+                    }
+
+                    if (charlando) {
+                        synchronized (ServidorChat.CONEXIONES_CLIENTES) {
+                            if (ServidorChat.CONEXIONES_CLIENTES.contains(usuario)) {
+                                enviarMensajeAUsuario(mensaje);
+                            } else {
+                                dos = new DataOutputStream(cliente.getOutputStream());
+                                dos.writeUTF("[ERROR] El usuario " + usuario.nombre + " ya no se encuentra conectado. Utiliza el comando #listar para ver los usuarios conectados.");
+                                charlando = false;
+                            }
+                        }
+                    } else {
+                        dos = new DataOutputStream(cliente.getOutputStream());
+                        dos.writeUTF("[ERROR] '" + mensaje + "' no se reconoce como comando. Si quieres iniciar una conversación o responder a un usuario utiliza el comando #charlar <nic>.");
+                    }
                 }
             }
 
         } catch (IOException ex) {
             //Logger.getLogger(HiloCliente.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Cerrando cliente " + nombre + " con dirección " + cliente.getRemoteSocketAddress());
+        } finally {
+            if (ServidorChat.CONEXIONES_CLIENTES.contains(this)) {
+                ServidorChat.CONEXIONES_CLIENTES.remove(this);
+            }
+
         }
         System.out.println(this.nombre + " con dirección " + cliente.getRemoteSocketAddress() + " desconectado.");
+    }
+
+    public synchronized void enviarMensaje(String mensaje) {
+        DataOutputStream dos = null;
+        try {
+            dos = new DataOutputStream(cliente.getOutputStream());
+            dos.writeUTF(mensaje);
+        } catch (IOException ex) {
+            Logger.getLogger(HiloClienteServidor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private boolean addCliente() {
         synchronized (ServidorChat.CONEXIONES_CLIENTES) {
             if (ServidorChat.CONEXIONES_CLIENTES.contains(this)) {
                 System.out.println("Rechazando conexion para " + nombre);
-                try {
-                    DataOutputStream out = new DataOutputStream(cliente.getOutputStream());
-                    out.writeUTF(Conexion.FIN_CLIENTE);
-                } catch (IOException ex) {
-                    Logger.getLogger(HiloClienteServidor.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                enviarMensaje(Conexion.FIN_CLIENTE);
                 return false;
             } else {
                 ServidorChat.CONEXIONES_CLIENTES.add(this);
@@ -121,7 +127,7 @@ public class HiloClienteServidor extends Thread {
         return true;
     }
 
-    private String listarUsuarios() {
+    private void listarUsuarios() {
         StringBuilder sb = new StringBuilder();
         synchronized (ServidorChat.CONEXIONES_CLIENTES) {
             int usuarios = ServidorChat.CONEXIONES_CLIENTES.size();
@@ -130,41 +136,39 @@ public class HiloClienteServidor extends Thread {
                 for (HiloClienteServidor usuario : ServidorChat.CONEXIONES_CLIENTES) {
                     sb.append(usuario.nombre).append("\n");
                 }
-            } else {
-                sb.append("En este momento no hay usuarios conectados.");
             }
         }
-        return sb.toString();
+        enviarMensaje(sb.toString());
     }
 
-    private String ayuda() {
+    private void ayuda() {
         StringBuilder sb = new StringBuilder();
         sb.append("#listar: lista todos los usuarios conectados.\n");
         sb.append("#charlar <usuario>: comienza la comunicación con el usuario <usuario>.\n");
         sb.append("#salir: se desconecta del chat.");
-        return sb.toString();
+        enviarMensaje(sb.toString());
     }
 
-    private String charlar() {
+    private void charlar() {
         StringBuilder sb = new StringBuilder();
         synchronized (ServidorChat.CONEXIONES_CLIENTES) {
-            if (ServidorChat.CONEXIONES_CLIENTES.contains(usuario)) {
+            if (ServidorChat.CONEXIONES_CLIENTES.contains(usuario) && !usuario.equals(this)) {
                 int index = ServidorChat.CONEXIONES_CLIENTES.indexOf(usuario);
                 this.usuario = ServidorChat.CONEXIONES_CLIENTES.get(index);
                 charlando = true;
                 sb.append("Ahora estás conectado con ").append(usuario.nombre).append(". Escribe para hablarle.");
             } else {
-                sb.append("[ERROR] El usuario ").append(usuario.nombre).append(" no se encuentra conectado. Utiliza el comando #listar para ver los usuarios conectados.");
+                sb.append("[ERROR] El usuario ").append(usuario.nombre).append(" no se encuentra conectado o es usted mismo. Utiliza el comando #listar para ver los usuarios conectados.");
             }
         }
-        return sb.toString();
+        enviarMensaje(sb.toString());
     }
 
-    public synchronized void recibirMensaje(String mensaje, HiloClienteServidor emisor) {
-        DataOutputStream out = null;
+    public synchronized void enviarMensajeAUsuario(String mensaje) {
+        DataOutputStream dos = null;
         try {
-            out = new DataOutputStream(cliente.getOutputStream());
-            out.writeUTF(">" + emisor.nombre + ": " + mensaje);
+            dos = new DataOutputStream(usuario.cliente.getOutputStream());
+            dos.writeUTF(">" + nombre + ": " + mensaje);
         } catch (IOException ex) {
             Logger.getLogger(HiloClienteServidor.class.getName()).log(Level.SEVERE, null, ex);
         }
