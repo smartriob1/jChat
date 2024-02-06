@@ -17,12 +17,10 @@ public class ServidorChat {
 
     private static ServerSocket server;
     public static List<HiloClienteServidor> CONEXIONES_CLIENTES;
-    public static HashMap<String, Integer> HISTORIAL_CLIENTES;
 
     public static void main(String[] args) {
         try {
             CONEXIONES_CLIENTES = new ArrayList();
-            HISTORIAL_CLIENTES = new HashMap();
             server = new ServerSocket(Conexion.PUERTO());
             System.out.println("Servidor escuchando en " + server.getLocalSocketAddress());
 

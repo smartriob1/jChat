@@ -118,12 +118,6 @@ public class HiloClienteServidor extends Thread {
                 ServidorChat.CONEXIONES_CLIENTES.add(this);
             }
         }
-
-        synchronized (ServidorChat.HISTORIAL_CLIENTES) {
-            Integer conexiones = ServidorChat.HISTORIAL_CLIENTES.get(nombre);
-            conexiones = conexiones == null ? 1 : ++conexiones;
-            ServidorChat.HISTORIAL_CLIENTES.put(nombre, conexiones);
-        }
         return true;
     }
 
