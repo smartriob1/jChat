@@ -33,7 +33,6 @@ public class ClienteChat {
                 receptor.start();
                 emisor.start();
                 receptor.join();
-                emisor.setFin(true);
                 emisor.join();
                 servidor.close();
             } else {

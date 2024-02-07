@@ -14,25 +14,18 @@ import java.util.logging.Logger;
 public class Emisor extends Thread {
 
     private DataOutputStream dos;
-    private boolean fin;
 
     public Emisor(DataOutputStream dos) {
         this.dos = dos;
-        this.fin = false;
-    }
-
-    public void setFin(boolean fin) {
-        this.fin = fin;
     }
 
     @Override
     public void run() {
         try {
             Scanner sc = new Scanner(System.in);
-            while (!fin) {
-                //CORREGIR QUE SE QUEDA PILLADO EN EL SCANNER
-                String mensaje = sc.nextLine();
-                //Enviamos el comando
+            String mensaje = "";
+            while (!mensaje.equalsIgnoreCase("#salir")) {
+                mensaje = sc.nextLine();
                 dos.writeUTF(mensaje);
             }
         } catch (IOException ex) {
