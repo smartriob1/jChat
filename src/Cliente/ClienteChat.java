@@ -7,7 +7,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,13 +20,13 @@ public class ClienteChat {
     public static void main(String[] args) {
         String direccion, nic;
         try {
-//            if (args.length == 2) {
-//                direccion = args[0];
-//                nic = args[1];
-//                mandar el nic
+            if (args.length == 2) {
+                direccion = args[0];
+                nic = args[1];
                 Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
                 DataInputStream dis = new DataInputStream(servidor.getInputStream());
                 DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
+                dos.writeUTF(nic);
                 Emisor emisor = new Emisor(dos);
                 Receptor receptor = new Receptor(dis);
                 receptor.start();
@@ -36,9 +35,9 @@ public class ClienteChat {
                 emisor.setFin(true);
                 emisor.join();
                 servidor.close();
-//            } else {
-//                System.out.println("El comando lleva los siguientes parámetros java ClienteChat <direccion> <nic>");
-//            }
+            } else {
+                System.out.println("El comando lleva los siguientes parámetros java ClienteChat <direccion> <nic>");
+            }
 
         } catch (IOException ex) {
             //Logger.getLogger(ClienteChat.class.getName()).log(Level.SEVERE, null, ex);
