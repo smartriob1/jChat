@@ -30,7 +30,6 @@ public class HiloClienteServidor extends Thread {
 
     public void run() {
         DataInputStream dis = null;
-        DataOutputStream dos = null;
         String mensaje;
         try {
             //Obtenemos el nic
@@ -39,13 +38,12 @@ public class HiloClienteServidor extends Thread {
             System.out.println("Recibido cliente " + nombre + " con dirección " + cliente.getRemoteSocketAddress());
             if (addCliente()) {
                 synchronized (this) {
-                    dos = new DataOutputStream(cliente.getOutputStream());
-                    dos.writeUTF("Estás conectado con el nic de " + nombre);
+                    enviarMensaje("Estás conectado con el nic de " + nombre);
                 }
 
                 while (true) {
                     mensaje = dis.readUTF();
-
+                    
                     if (COMANDOS[0].equalsIgnoreCase(mensaje.trim())) {
                         ayuda();
                         continue;
@@ -74,14 +72,12 @@ public class HiloClienteServidor extends Thread {
                             if (ServidorChat.CONEXIONES_CLIENTES.contains(usuario)) {
                                 enviarMensajeAUsuario(mensaje);
                             } else {
-                                dos = new DataOutputStream(cliente.getOutputStream());
-                                dos.writeUTF("[ERROR] El usuario " + usuario.nombre + " ya no se encuentra conectado. Utiliza el comando #listar para ver los usuarios conectados.");
+                                enviarMensaje("[ERROR] El usuario " + usuario.nombre + " ya no se encuentra conectado. Utiliza el comando #listar para ver los usuarios conectados.");
                                 charlando = false;
                             }
                         }
                     } else {
-                        dos = new DataOutputStream(cliente.getOutputStream());
-                        dos.writeUTF("[ERROR] '" + mensaje + "' no se reconoce como comando. Si quieres iniciar una conversación o responder a un usuario utiliza el comando #charlar <nic>.");
+                        enviarMensaje("[ERROR] '" + mensaje + "' no se reconoce como comando. Si quieres iniciar una conversación o responder a un usuario utiliza el comando #charlar <nic>.");
                     }
                 }
             }
@@ -161,8 +157,13 @@ public class HiloClienteServidor extends Thread {
     public synchronized void enviarMensajeAUsuario(String mensaje) {
         DataOutputStream dos = null;
         try {
-            dos = new DataOutputStream(usuario.cliente.getOutputStream());
-            dos.writeUTF(">" + nombre + ": " + mensaje);
+            if (!mensaje.equalsIgnoreCase("")) {
+                dos = new DataOutputStream(usuario.cliente.getOutputStream());
+                dos.writeUTF(">" + nombre + ": " + mensaje);
+            } else {
+                enviarMensaje("[ERROR] No puedes enviar mensajes vacios.");
+            }
+
         } catch (IOException ex) {
             Logger.getLogger(HiloClienteServidor.class.getName()).log(Level.SEVERE, null, ex);
         }
