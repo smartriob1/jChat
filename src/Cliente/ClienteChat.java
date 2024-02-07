@@ -19,11 +19,12 @@ public class ClienteChat {
     //los parametros son en args[]
     public static void main(String[] args) {
         String direccion, nic;
+        Socket servidor = null;
         try {
             if (args.length == 2) {
                 direccion = args[0];
                 nic = args[1];
-                Socket servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
+                servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
                 DataInputStream dis = new DataInputStream(servidor.getInputStream());
                 DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
                 dos.writeUTF(nic);
@@ -40,7 +41,7 @@ public class ClienteChat {
             }
 
         } catch (IOException ex) {
-            //Logger.getLogger(ClienteChat.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ClienteChat.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
             Logger.getLogger(ClienteChat.class.getName()).log(Level.SEVERE, null, ex);
         }
