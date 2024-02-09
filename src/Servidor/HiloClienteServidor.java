@@ -157,11 +157,11 @@ public class HiloClienteServidor extends Thread {
     public synchronized void enviarMensajeAUsuario(String mensaje) {
         DataOutputStream dos = null;
         try {
-            if (!mensaje.equalsIgnoreCase("")) {
+            if (!mensaje.equalsIgnoreCase("") && mensaje.charAt(0) != '#') {
                 dos = new DataOutputStream(usuario.cliente.getOutputStream());
                 dos.writeUTF(">" + nombre + ": " + mensaje);
             } else {
-                enviarMensaje("[ERROR] No puedes enviar mensajes vacios.");
+                enviarMensaje("[ERROR] Los mensajes no pueden estar vacíos ni empezar por '#'.");
             }
 
         } catch (IOException ex) {

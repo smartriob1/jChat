@@ -26,7 +26,7 @@ public class Conexion {
             Properties props = new Properties();
             props.load(new FileInputStream(".\\Servidor\\opciones.conf"));
             puerto = Integer.valueOf(props.getProperty("PUERTO"));
-            servidor = props.getProperty("SERVIDOR", "localhost");
+            servidor = props.getProperty("SERVIDOR", "127.0.0.1");
         } catch (IOException| NumberFormatException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
         }

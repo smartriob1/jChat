@@ -24,7 +24,7 @@ public class ClienteChat {
             if (args.length == 2) {
                 direccion = args[0];
                 nic = args[1];
-                servidor = new Socket(Conexion.SERVIDOR(), Conexion.PUERTO());
+                servidor = new Socket(direccion, Conexion.PUERTO());
                 DataInputStream dis = new DataInputStream(servidor.getInputStream());
                 DataOutputStream dos = new DataOutputStream(servidor.getOutputStream());
                 dos.writeUTF(nic);
