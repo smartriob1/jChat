@@ -1,21 +1,22 @@
 package Servidor;
 
-
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
+ * Servidor del chat.
  *
  * @author Silvia
  */
 public class ServidorChat {
 
     private static ServerSocket server;
-    public static List<HiloClienteServidor> CONEXIONES_CLIENTES;
+    public static List<HiloCliente> CONEXIONES_CLIENTES;
 
     public static void main(String[] args) {
         try {
@@ -25,12 +26,12 @@ public class ServidorChat {
 
             while (true) {
                 Socket cliente = server.accept();
-                HiloClienteServidor hiloSocket = new HiloClienteServidor(cliente);
+                HiloCliente hiloSocket = new HiloCliente(cliente);
                 hiloSocket.start();
             }
 
         } catch (IOException ex) {
-            //Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServidorChat.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println("Apagando...");
     }

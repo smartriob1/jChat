@@ -1,7 +1,5 @@
 package Cliente;
 
-
-
 import Servidor.Conexion;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -11,16 +9,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Cliente del chat.
  *
  * @author Silvia
  */
 public class ClienteChat {
 
-    //los parametros son en args[]
     public static void main(String[] args) {
         String direccion, nic;
         Socket servidor = null;
         try {
+            //Comprobamos los parametros en args
             if (args.length == 2) {
                 direccion = args[0];
                 nic = args[1];

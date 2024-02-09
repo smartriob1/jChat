@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Hilo para recibir los mensajes del servidor.
  *
  * @author Silvia
  */

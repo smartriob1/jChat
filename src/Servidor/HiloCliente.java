@@ -9,30 +9,32 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Hilo para cada cliente del servidor.
  *
  * @author Silvia
  */
-public class HiloClienteServidor extends Thread {
+public class HiloCliente extends Thread {
 
     private final static String[] COMANDOS = {"#ayuda", "#listar", "#charlar ", "#salir"};
     private String nombre;
     private boolean charlando = false;
     private Socket cliente;
-    private HiloClienteServidor usuario = null;
+    private HiloCliente usuario = null;
 
-    public HiloClienteServidor(String nombre) {
+    public HiloCliente(String nombre) {
         this.nombre = nombre;
     }
 
-    public HiloClienteServidor(Socket cliente) {
+    public HiloCliente(Socket cliente) {
         this.cliente = cliente;
     }
 
+    @Override
     public void run() {
         DataInputStream dis = null;
         String mensaje;
+
         try {
-            //Obtenemos el nic
             dis = new DataInputStream(cliente.getInputStream());
             nombre = dis.readUTF();
             System.out.println("Recibido cliente " + nombre + " con dirección " + cliente.getRemoteSocketAddress());
@@ -43,7 +45,7 @@ public class HiloClienteServidor extends Thread {
 
                 while (true) {
                     mensaje = dis.readUTF();
-                    
+
                     if (COMANDOS[0].equalsIgnoreCase(mensaje.trim())) {
                         ayuda();
                         continue;
@@ -56,7 +58,7 @@ public class HiloClienteServidor extends Thread {
 
                     if (mensaje.trim().startsWith(COMANDOS[2])) {
                         String[] campos = mensaje.split(" ");
-                        usuario = new HiloClienteServidor(campos[1]);
+                        usuario = new HiloCliente(campos[1]);
                         charlar();
                         continue;
                     }
@@ -83,7 +85,6 @@ public class HiloClienteServidor extends Thread {
             }
 
         } catch (IOException ex) {
-            //Logger.getLogger(HiloCliente.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Cerrando cliente " + nombre + " con dirección " + cliente.getRemoteSocketAddress());
         } finally {
             if (ServidorChat.CONEXIONES_CLIENTES.contains(this)) {
@@ -94,16 +95,24 @@ public class HiloClienteServidor extends Thread {
         System.out.println(this.nombre + " con dirección " + cliente.getRemoteSocketAddress() + " desconectado.");
     }
 
+    /**
+     * Método para enviar un mensaje al cliente.
+     *
+     * @param mensaje mensaje a enviar.
+     */
     public synchronized void enviarMensaje(String mensaje) {
         DataOutputStream dos = null;
         try {
             dos = new DataOutputStream(cliente.getOutputStream());
             dos.writeUTF(mensaje);
         } catch (IOException ex) {
-            Logger.getLogger(HiloClienteServidor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HiloCliente.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * Método para comprobar si hay un cliente con el mismo nombre.
+     */
     private boolean addCliente() {
         synchronized (ServidorChat.CONEXIONES_CLIENTES) {
             if (ServidorChat.CONEXIONES_CLIENTES.contains(this)) {
@@ -117,13 +126,16 @@ public class HiloClienteServidor extends Thread {
         return true;
     }
 
+    /**
+     * Método para listar los usuarios con el comando #listar.
+     */
     private void listarUsuarios() {
         StringBuilder sb = new StringBuilder();
         synchronized (ServidorChat.CONEXIONES_CLIENTES) {
             int usuarios = ServidorChat.CONEXIONES_CLIENTES.size();
             if (usuarios > 0) {
                 sb.append("En este momento están conectados ").append(usuarios).append(" usuarios:\n");
-                for (HiloClienteServidor usuario : ServidorChat.CONEXIONES_CLIENTES) {
+                for (HiloCliente usuario : ServidorChat.CONEXIONES_CLIENTES) {
                     sb.append(usuario.nombre).append("\n");
                 }
             }
@@ -131,6 +143,9 @@ public class HiloClienteServidor extends Thread {
         enviarMensaje(sb.toString());
     }
 
+    /**
+     * Método para la ayuda con el comando #ayuda.
+     */
     private void ayuda() {
         StringBuilder sb = new StringBuilder();
         sb.append("#listar: lista todos los usuarios conectados.\n");
@@ -139,6 +154,10 @@ public class HiloClienteServidor extends Thread {
         enviarMensaje(sb.toString());
     }
 
+    /**
+     * Método para conectar con un cliente con el comando #charlar usuario si
+     * este existe.
+     */
     private void charlar() {
         StringBuilder sb = new StringBuilder();
         synchronized (ServidorChat.CONEXIONES_CLIENTES) {
@@ -154,6 +173,11 @@ public class HiloClienteServidor extends Thread {
         enviarMensaje(sb.toString());
     }
 
+    /**
+     * Método para reenviar un mensaje a otro cliente.
+     *
+     * @param mensaje mensaje a enviar.
+     */
     public synchronized void enviarMensajeAUsuario(String mensaje) {
         DataOutputStream dos = null;
         try {
@@ -165,7 +189,7 @@ public class HiloClienteServidor extends Thread {
             }
 
         } catch (IOException ex) {
-            Logger.getLogger(HiloClienteServidor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HiloCliente.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -187,7 +211,7 @@ public class HiloClienteServidor extends Thread {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final HiloClienteServidor other = (HiloClienteServidor) obj;
+        final HiloCliente other = (HiloCliente) obj;
         return Objects.equals(this.nombre, other.nombre);
     }
 

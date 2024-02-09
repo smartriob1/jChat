@@ -1,7 +1,5 @@
 package Servidor;
 
-
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -9,11 +7,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Clase Singleton para la conexión.
  *
  * @author Silvia
  */
 public class Conexion {
-    
+
     private Integer puerto;
     private String servidor;
     private static Conexion singleton = null;
@@ -27,7 +26,7 @@ public class Conexion {
             props.load(new FileInputStream(".\\Servidor\\opciones.conf"));
             puerto = Integer.valueOf(props.getProperty("PUERTO"));
             servidor = props.getProperty("SERVIDOR", "127.0.0.1");
-        } catch (IOException| NumberFormatException ex) {
+        } catch (IOException | NumberFormatException ex) {
             Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
