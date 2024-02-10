@@ -58,8 +58,12 @@ public class HiloCliente extends Thread {
 
                     if (mensaje.trim().startsWith(COMANDOS[2])) {
                         String[] campos = mensaje.split(" ");
-                        usuario = new HiloCliente(campos[1]);
-                        charlar();
+                        if (campos.length == 2) {
+                            usuario = new HiloCliente(campos[1]);
+                            charlar();
+                        }else{
+                            enviarMensaje("[ERROR] El comando es incorrecto. Usa #charlar <nic>.");
+                        }
                         continue;
                     }
 
