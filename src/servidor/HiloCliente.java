@@ -1,5 +1,6 @@
-package Servidor;
+package servidor;
 
+import conexion.Conexion;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

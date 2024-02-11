@@ -1,5 +1,6 @@
-package Servidor;
+package servidor;
 
+import conexion.Conexion;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

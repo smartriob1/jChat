@@ -1,6 +1,6 @@
-package Cliente;
+package cliente;
 
-import Servidor.Conexion;
+import conexion.Conexion;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.logging.Level;

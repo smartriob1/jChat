@@ -1,4 +1,4 @@
-package Cliente;
+package cliente;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
