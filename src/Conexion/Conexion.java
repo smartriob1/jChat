@@ -1,4 +1,4 @@
-package conexion;
+package Conexion;
 
 import java.io.FileInputStream;
 import java.io.IOException;
