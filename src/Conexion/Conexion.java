@@ -23,7 +23,7 @@ public class Conexion {
         servidor = "localhost";
         try {
             Properties props = new Properties();
-            props.load(new FileInputStream(".\\Servidor\\opciones.conf"));
+            props.load(new FileInputStream(".\\Conexion\\opciones.conf"));
             puerto = Integer.valueOf(props.getProperty("PUERTO"));
             servidor = props.getProperty("SERVIDOR", "127.0.0.1");
         } catch (IOException | NumberFormatException ex) {
